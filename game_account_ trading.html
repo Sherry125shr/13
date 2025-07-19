@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游易网 - 专业游戏账号交易平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* 导航栏 */
+        header {
+            background-color: #1e88e5;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        /* 登录/注册按钮 */
+        .auth-buttons button {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+        
+        .auth-buttons button:hover {
+            background-color: #f57c00;
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e88e5;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .form-submit:hover {
+            background-color: #1565c0;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .form-footer a {
+            color: #1e88e5;
+            text-decoration: none;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 短信验证码 */
+        .sms-code {
+            display: flex;
+        }
+        
+        .sms-code input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .sms-code button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sms-code button:hover {
+            background-color: #388e3c;
+        }
+        
+        /* 主要内容 */
+        .main-content {
+            padding: 30px 0;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        /* 账号列表 */
+        .account-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .account-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .account-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .account-image {
+            height: 160px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .account-info {
+            padding: 15px;
+        }
+        
+        .account-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .account-game {
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .account-price {
+            color: #e53935;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .account-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .buy-button {
+            display: block;
+            text-align: center;
+            background-color: #1e88e5;
+            color: white;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .buy-button:hover {
+            background-color: #1565c0;
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .footer-section {
+            flex: 1;
+            padding: 0 15px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-section ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .footer-section ul li a:hover {
+            color: #fff;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #bbb;
+        }
+        
+        /* 用户中心 */
+        .user-center {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .user-sidebar {
+            width: 200px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-right: 20px;
+        }
+        
+        .user-sidebar h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-sidebar ul {
+            list-style: none;
+        }
+        
+        .user-sidebar ul li {
+            margin-bottom: 10px;
+        }
+        
+        .user-sidebar ul li a {
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: block;
+            padding: 5px 0;
+        }
+        
+        .user-sidebar ul li a:hover {
+            color: #1e88e5;
+        }
+        
+        .user-sidebar ul li a.active {
+            color: #1e88e5;
+            font-weight: bold;
+        }
+        
+        .user-content {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* 聊天窗口 */
+        .chat-container {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 99;
+        }
+        
+        .chat-header {
+            background-color: #1e88e5;
+            color: white;
+            padding: 12px 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            font-weight: bold;
+        }
+        
+        .chat-close {
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .chat-input button {
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                margin-top: 15px;
+            }
+            
+            .auth-buttons {
+                margin-top: 15px;
+            }
+            
+            .modal-content {
+                width: 90%;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+            
+            .footer-section {
+                margin-bottom: 20px;
+            }
+            
+            .user-center {
+                flex-direction: column;
+            }
+            
+            .user-sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .chat-container {
+                width: 90%;
+                right: 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">游易网</div>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="#">我要卖号</a></li>
+                    <li><a href="#">我要买号</a></li>
+                    <li><a href="#">安全保障</a></li>
+                    <li><a href="#">帮助中心</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button id="loginBtn">登录</button>
+                    <button id="registerBtn">注册</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <div class="container">
+            <h1 class="page-title">热门游戏账号推荐</h1>
+            
+            <div class="account-list">
+                <!-- 账号卡片1 -->
+                <div class="account-card">
+                    <div class="account-image" style="background-image: url('https://via.placeholder.com/300x200?text=幻境传说')"></div>
+                    <div class="account-info">
+                        <div class="account-title">V15全英雄全皮肤账号</div>
+                        <div class="account-game">游戏：幻境传说</div>
+                        <div class="account-price">¥2,800</div>
+                        <div class="account-meta">
+                            <span>发布日期: 2025-06-15</span>
+                            <span>卖家: 游戏达人</span>
+                        </div>
+                        <a href="#" class="buy-button" onclick="openChat('幻境传说-V15全英雄全皮肤账号', '游戏达人')">立即购买</a>
+                    </div>
+                </div>
+                
+                <!-- 账号卡片2 -->
+                <div class="account-card">
+                    <div class="account-image" style="background-image: url('https://via.placeholder.com/300x200?text=星际争霸')"></div>
+                    <div class="account-info">
+                        <div class="account-title">钻石段位全英雄账号</div>
+                        <div class="account-game">游戏：星际争霸：永恒</div>
+                        <div class="account-price">¥1,500</div>
+                        <div class="account-meta">
+                            <span>发布日期: 2025-06-20</span>
+                            <span>卖家: 星际玩家</span>
+                        </div>
+                        <a href="#" class="buy-button" onclick="openChat('星际争霸：永恒-钻石段位全英雄账号', '星际玩家')">立即购买</a>
+                    </div>
+                </div>
+                
+                <!-- 账号卡片3 -->
+                <div class="account-card">
+                    <div class="account-image" style="background-image: url('https://via.placeholder.com/300x200?text=暗夜猎手')"></div>
+                    <div class="account-info">
+                        <div class="account-title">满级满装备猎人账号</div>
+                        <div class="account-game">游戏：暗夜猎手</div>
+                        <div class="account-price">¥3,200</div>
+                        <div class="account-meta">
+                            <span>发布日期: 2025-06-25</span>
+                            <span>卖家: 猎手之王</span>
+                        </div>
+                        <a href="#" class="buy-button" onclick="openChat('暗夜猎手-满级满装备猎人账号', '猎手之王')">立即购买</a>
+                    </div>
+                </div>
+                
+                <!-- 账号卡片4 -->
+                <div class="account-card">
+                    <div class="account-image" style="background-image: url('https://via.placeholder.com/300x200?text=王者荣耀2')"></div>
+                    <div class="account-info">
+                        <div class="account-title">王者50星全英雄账号</div>
+                        <div class="account-game">游戏：王者荣耀2</div>
+                        <div class="account-price">¥2,500</div>
+                        <div class="account-meta">
+                            <span>发布日期: 2025-07-02</span>
+                            <span>卖家: 荣耀王者</span>
+                        </div>
+                        <a href="#" class="buy-button" onclick="openChat('王者荣耀2-王者50星全英雄账号', '荣耀王者')">立即购买</a>
+                    </div>
+                </div>
+                
+                <!-- 账号卡片5 -->
+                <div class="account-card">
+                    <div class="account-image" style="background-image: url('https://via.placeholder.com/300x200?text=原神2')"></div>
+                    <div class="account-info">
+                        <div class="account-title">全角色90级+专武账号</div>
+                        <div class="account-game">游戏：原神2</div>
+                        <div class="account-price">¥4,800</div>
+                        <div class="account-meta">
+                            <span>发布日期: 2025-07-10</span>
+                            <span>卖家: 提瓦特旅行者</span>
+                        </div>
+                        <a href="#" class="buy-button" onclick="openChat('原神2-全角色90级+专武账号', '提瓦特旅行者')">立即购买</a>
+                    </div>
+                </div>
+                
+                <!-- 账号卡片6 -->
+                <div class="account-card">
+                    <div class="account-image" style="background-image: url('https://via.placeholder.com/300x200?text=绝地求生2')"></div>
+                    <div class="account-info">
+                        <div class="account-title">全赛季战神账号</div>
+                        <div class="account-game">游戏：绝地求生2</div>
+                        <div class="account-price">¥3,500</div>
+                        <div class="account-meta">
+                            <span>发布日期: 2025-07-15</span>
+                            <span>卖家: 吃鸡大神</span>
+                        </div>
+                        <a href="#" class="buy-button" onclick="openChat('绝地求生2-全赛季战神账号', '吃鸡大神')">立即购买</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <ul>
+                        <li><a href="#">公司简介</a></li>
+                        <li><a href="#">联系我们</a></li>
+                        <li><a href="#">招贤纳士</a></li>
+                        <li><a href="#">商务合作</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>交易指南</h3>
+                    <ul>
+                        <li><a href="#">如何购买</a></li>
+                        <li><a href="#">如何出售</a></li>
+                        <li><a href="#">交易流程</a></li>
+                        <li><a href="#">常见问题</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>安全保障</h3>
+                    <ul>
+                        <li><a href="#">账号保护</a></li>
+                        <li><a href="#">资金安全</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">服务协议</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>客服中心</h3>
+                    <ul>
+                        <li><a href="#" onclick="openCustomerService()">在线客服</a></li>
+                        <li>客服电话: 400-123-4567</li>
+                        <li>服务时间: 9:00-22:00</li>
+                        <li>邮箱: service@youyi.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 游易网 - 专业游戏账号交易平台 版权所有
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>用户登录</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginPhone">手机号</label>
+                    <input type="text" id="loginPhone" placeholder="请输入手机号" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="form-submit">登录</button>
+                </div>
+                <div class="form-footer">
+                    还没有账号？<a href="#" id="switchToRegister">立即注册</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>用户注册</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">真实姓名</label>
+                    <input type="text" id="registerName" placeholder="请输入真实姓名" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerIdCard">身份证号</label>
+                    <input type="text" id="registerIdCard" placeholder="请输入身份证号" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerBankCard">银行卡号</label>
+                    <input type="text" id="registerBankCard" placeholder="请输入银行卡号" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">手机号</label>
+                    <input type="text" id="registerPhone" placeholder="请输入手机号" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">设置密码</label>
+                    <input type="password" id="registerPassword" placeholder="请设置6-20位密码" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">确认密码</label>
+                    <input type="password" id="registerConfirmPassword" placeholder="请再次输入密码" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerSmsCode">短信验证码</label>
+                    <div class="sms-code">
+                        <input type="text" id="registerSmsCode" placeholder="请输入验证码" required>
+                        <button type="button" id="sendSmsBtn">获取验证码</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="form-submit">注册</button>
+                </div>
+                <div class="form-footer">
+                    已有账号？<a href="#" id="switchToLogin">立即登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 聊天窗口 -->
+    <div id="chatContainer" class="chat-container">
+        <div class="chat-header">
+            <div class="chat-title" id="chatTitle">与卖家沟通</div>
+            <div class="chat-close" onclick="closeChat()">×</div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message seller">
+                <p>你好，欢迎咨询这个游戏账号！</p>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="输入消息...">
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+    
+    <!-- 客服聊天窗口 -->
+    <div id="customerServiceChat" class="chat-container">
+        <div class="chat-header">
+            <div class="chat-title">在线客服</div>
+            <div class="chat-close" onclick="closeCustomerService()">×</div>
+        </div>
+        <div class="chat-messages" id="customerServiceMessages">
+            <div class="message seller">
+                <p>您好，游易网客服为您服务，请问有什么可以帮您？</p>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="customerServiceInput" placeholder="输入消息...">
+            <button onclick="sendCustomerServiceMessage()">发送</button>
+        </div>
+    </div>
+    
+    <script>
+        // 登录注册模态框控制
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const closeButtons = document.querySelectorAll('.close');
+        
+        loginBtn.addEventListener('click', function() {
+            loginModal.style.display = 'block';
+        });
+        
+        registerBtn.addEventListener('click', function() {
+            registerModal.style.display = 'block';
+        });
+        
+        switchToRegister.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'block';
+        });
+        
+        switchToLogin.addEventListener('click', function(e) {
+            e.preventDefault();
+            registerModal.style.display = 'none';
+            loginModal.style.display = 'block';
+        });
+        
+        closeButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (event.target === registerModal) {
+                registerModal.style.display = 'none';
+            }
+        });
+        
+        // 短信验证码
+        const sendSmsBtn = document.getElementById('sendSmsBtn');
+        sendSmsBtn.addEventListener('click', function() {
+            const phone = document.getElementById('registerPhone').value;
+            if (!phone) {
+                alert('请输入手机号');
+                return;
+            }
+            
+            // 模拟发送短信验证码
+            sendSmsBtn.disabled = true;
+            let countdown = 60;
+            sendSmsBtn.textContent = `${countdown}秒后重试`;
+            
+            const timer = setInterval(function() {
+                countdown--;
+                sendSmsBtn.textContent = `${countdown}秒后重试`;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    sendSmsBtn.disabled = false;
+                    sendSmsBtn.textContent = '获取验证码';
+                }
+            }, 1000);
+            
+            alert(`验证码已发送至手机号: ${phone}，请注意查收`);
+        });
+        
+        // 表单提交
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('登录成功！');
+            loginModal.style.display = 'none';
+            // 这里可以添加实际的登录逻辑
+        });
+        
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('注册成功！');
+            registerModal.style.display = 'none';
+            // 这里可以添加实际的注册逻辑
+        });
+        
+        // 聊天功能
+        function openChat(accountTitle, sellerName) {
+            document.getElementById('chatTitle').textContent = `与卖家 ${sellerName} 沟通: ${accountTitle}`;
+            document.getElementById('chatContainer').style.display = 'block';
+        }
+        
+        function closeChat() {
+            document.getElementById('chatContainer').style.display = 'none';
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message buyer';
+            messageElement.innerHTML = `<p>${message}</p>`;
+            messagesContainer.appendChild(messageElement);
+            
+            // 模拟卖家回复
+            setTimeout(function() {
+                const replyElement = document.createElement('div');
+                replyElement.className = 'message seller';
+                replyElement.innerHTML = `<p>感谢您的咨询，这个账号目前还在售，价格可以小刀。</p>`;
+                messagesContainer.appendChild(replyElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // 客服功能
+        function openCustomerService() {
+            document.getElementById('customerServiceChat').style.display = 'block';
+        }
+        
+        function closeCustomerService() {
+            document.getElementById('customerServiceChat').style.display = 'none';
+        }
+        
+        function sendCustomerServiceMessage() {
+            const input = document.getElementById('customerServiceInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('customerServiceMessages');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message buyer';
+            messageElement.innerHTML = `<p>${message}</p>`;
+            messagesContainer.appendChild(messageElement);
+            
+            // 模拟客服回复
+            setTimeout(function() {
+                const replyElement = document.createElement('div');
+                replyElement.className = 'message seller';
+                replyElement.innerHTML = `<p>感谢您的咨询，我们会尽快为您解决问题。</p>`;
+                messagesContainer.appendChild(replyElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // 回车发送消息
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        document.getElementById('customerServiceInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendCustomerServiceMessage();
+            }
+        });
+    </script>
+</body>
+</html>
